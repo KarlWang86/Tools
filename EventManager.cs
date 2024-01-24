@@ -2,6 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// add listener
+// EventManager.instance.AddListener(EventName.ExampleEvent, OnExampleEvent);
+
+// trigger event
+// object[] eventParams = { 42, "Hello, World!" };
+// EventManager.instance.Raise(EventName.ExampleEvent, eventParams);
+
+// deal event
+// private void OnExampleEvent(EventParams eventParams)
+//    {
+//        object[] parameters = eventParams.Params;
+//        Debug.Log($"ExampleEvent triggered with parameters: {parameters[0]}, {parameters[1]}");
+//    }
+
+// remove listener
+// EventManager.instance.RemoveListener(EventName.ExampleEvent, OnExampleEvent);
+
+
 public class EventManager {
     static EventManager _instance = null;
     public static EventManager instance {
@@ -14,56 +32,54 @@ public class EventManager {
         }
     }
 
-    public delegate void EventDelegate<T>(T e) where T : BaseEvent;
-    private delegate void EventDelegate(BaseEvent e);
+    public delegate void EventDelegate(EventParams eventParams);
 
-    private Dictionary<System.Type, EventDelegate> delegates = new Dictionary<System.Type, EventDelegate>();
-    private Dictionary<System.Delegate, EventDelegate> delegateLookup = new Dictionary<System.Delegate, EventDelegate>();
+    private Dictionary<EventName, EventDelegate> delegates = new Dictionary<EventName, EventDelegate>();
 
-    public void AddListener<T>(EventDelegate<T> del) where T : BaseEvent {
-        // Early-out if we've already registered this delegate
-        if (delegateLookup.ContainsKey(del))
-            return;
-
-        // Create a new non-generic delegate which calls our generic one.
-        // This is the delegate we actually invoke.bushi 
-        EventDelegate internalDelegate = (e) => del((T)e);
-        delegateLookup[del] = internalDelegate;
-
-        EventDelegate tempDel;
-        if (delegates.TryGetValue(typeof(T), out tempDel)) {
-            delegates[typeof(T)] = tempDel += internalDelegate;
-        }
-        else {
-            delegates[typeof(T)] = internalDelegate;
+    public void AddListener(EventName eventName, EventDelegate del) {
+        if (delegates.ContainsKey(eventName)) {
+            delegates[eventName] += del;
+        } else {
+            delegates[eventName] = del;
         }
     }
 
-    public void RemoveListener<T>(EventDelegate<T> del) where T : BaseEvent {
-        EventDelegate internalDelegate;
-        if (delegateLookup.TryGetValue(del, out internalDelegate)) {
-            EventDelegate tempDel;
-            if (delegates.TryGetValue(typeof(T), out tempDel)) {
-                tempDel -= internalDelegate;
-                if (tempDel == null) {
-                    delegates.Remove(typeof(T));
-                }
-                else {
-                    delegates[typeof(T)] = tempDel;
-                }
+    public void RemoveListener(EventName eventName, EventDelegate del) {
+        if (delegates.ContainsKey(eventName)) {
+            delegates[eventName] -= del;
+
+            if (delegates[eventName] == null) {
+                delegates.Remove(eventName);
             }
-
-            delegateLookup.Remove(del);
         }
     }
 
-    public void Raise(BaseEvent e) {
+    public void Raise(EventName eventName, params object[] eventParams) {
         EventDelegate del;
-        if (delegates.TryGetValue(e.GetType(), out del)) {
-            del.Invoke(e);
+        if (delegates.TryGetValue(eventName, out del)) {
+            EventParams paramsObject = new EventParams(eventParams);
+            del.Invoke(paramsObject);
+        }
+
+        //invoke all listeners
+        foreach (var pair in delegates) {
+            if (pair.Key.Equals(eventName)) {
+                pair.Value.Invoke(new EventParams(eventParams));
+            }
         }
     }
 }
 
-public abstract class BaseEvent{}
+public abstract class BaseEvent { }
 
+public class EventParams {
+    public object[] Params { get; private set; }
+
+    public EventParams(params object[] parameters) {
+        Params = parameters;
+    }
+}
+
+public enum EventName {
+    ChangeRail,
+}
