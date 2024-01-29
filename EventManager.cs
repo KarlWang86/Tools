@@ -55,12 +55,6 @@ public class EventManager {
     }
 
     public void Raise(EventName eventName, params object[] eventParams) {
-        EventDelegate del;
-        if (delegates.TryGetValue(eventName, out del)) {
-            EventParams paramsObject = new EventParams(eventParams);
-            del.Invoke(paramsObject);
-        }
-
         //invoke all listeners
         foreach (var pair in delegates) {
             if (pair.Key.Equals(eventName)) {
@@ -82,4 +76,5 @@ public class EventParams {
 
 public enum EventName {
     ChangeRail,
+    GameDataInit,
 }
