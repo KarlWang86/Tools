@@ -6,6 +6,11 @@ using UnityEngine;
 /// combine same material child to parent and don't show child
 /// child must be static
 /// after combine every parent.mesh.vertexCount must less than 65535
+///
+/// Usage:
+/// 1) Attach to a parent object that contains mesh children.
+/// 2) Ensure children have MeshFilter + MeshRenderer.
+/// 3) Call Combine() manually, or let Start() call it automatically.
 /// </summary>
 public class CombineMeshGameObject : MonoBehaviour
 {

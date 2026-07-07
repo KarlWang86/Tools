@@ -2,24 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// add listener
-// EventManager.instance.AddListener(EventName.ExampleEvent, OnExampleEvent);
-
-// trigger event
-// object[] eventParams = { 42, "Hello, World!" };
-// EventManager.instance.Raise(EventName.ExampleEvent, eventParams);
-
-// deal event
-// private void OnExampleEvent(EventParams eventParams)
-//    {
-//        object[] parameters = eventParams.Params;
-//        Debug.Log($"ExampleEvent triggered with parameters: {parameters[0]}, {parameters[1]}");
-//    }
-
-// remove listener
-// EventManager.instance.RemoveListener(EventName.ExampleEvent, OnExampleEvent);
-
-
+/// <summary>
+/// Simple event bus.
+///
+/// Usage example:
+/// 1) Add listener
+///    EventManager.instance.AddListener(EventName.GameDataInit, OnGameDataInit);
+/// 2) Raise event
+///    EventManager.instance.Raise(EventName.GameDataInit, "ok", 1);
+/// 3) Handle payload
+///    private void OnGameDataInit(EventParams e) {
+///        object[] args = e.Params;
+///    }
+/// 4) Remove listener
+///    EventManager.instance.RemoveListener(EventName.GameDataInit, OnGameDataInit);
+/// </summary>
 public class EventManager {
     static EventManager _instance = null;
     public static EventManager instance {

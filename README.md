@@ -93,49 +93,16 @@ public class IntStringDictionary : UnitySerializedDictionary<int, string> { }
 5. Use editor scripts from the `Assets` menu in Project view.  
    编辑器脚本通过 Project 视图中的 `Assets` 菜单触发。
 
-## Usage Examples | 使用示例
+## Usage | 使用方式
 
-### EventManager
-
-```csharp
-void OnEnable()
-{
-	EventManager.instance.AddListener(EventName.GameDataInit, OnGameDataInit);
-}
-
-void OnDisable()
-{
-	EventManager.instance.RemoveListener(EventName.GameDataInit, OnGameDataInit);
-}
-
-private void OnGameDataInit(EventParams eventParams)
-{
-	// Read payload if provided / 读取事件参数
-	var args = eventParams.Params;
-}
-
-void InitDone()
-{
-	EventManager.instance.Raise(EventName.GameDataInit, "ok", 1);
-}
-```
-
-### JsonHelper
-
-```csharp
-int[] values = { 1, 2, 3 };
-string json = JsonHelper.ToJson(values);
-int[] restored = JsonHelper.FromJson<int>(json);
-```
-
-### CombineMeshGameObject
-
-```csharp
-// Add CombineMeshGameObject to a parent object with mesh children,
-// then call Combine() (or let Start() trigger automatically).
-// 将 CombineMeshGameObject 挂到父节点，子节点需有网格组件，
-// 然后调用 Combine()（或等待 Start() 自动执行）。
-```
+- Detailed usage examples are moved into source code comments for each class.
+- 详细使用示例已迁移到各个类的源码注释中。
+- Start from these files:
+- 建议从以下文件查看示例：
+  - `EventManager.cs`
+  - `CombineMeshGameObject.cs`
+  - `JsonHelper.cs`
+  - `CoroutineUtils.cs`
 
 ## Requirements | 运行要求
 
